@@ -6,10 +6,9 @@
 #include "boost_format.hpp"
 #include "getline.hpp"
 #include "tileset.hpp"
+#include "globals.hpp"
 
-extern SDL_Renderer* renderer;
-
-#define MATCH_DEBUG
+//#define MATCH_DEBUG
 
 Tileset& Tileset::GetTileset(const std::string& file)
 {

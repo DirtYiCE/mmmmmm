@@ -1,11 +1,11 @@
+#include <algorithm>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+#include <fstream>
 #include "getline.hpp"
 #include "tileset.hpp"
 #include "levelset.hpp"
-#include <algorithm>
-#include <fstream>
-
-extern SDL_Renderer* renderer;
-extern const int SCREEN_MUL;
+#include "globals.hpp"
 
 Level::Level(std::istream& in) : tiles()
 {
@@ -55,9 +55,18 @@ void Level::Render() const
 Levelset::Levelset(const std::string& file)
 {
     std::ifstream in(file);
-    GetLine(in, start_level);
-
     std::string line;
+
+    GetLine(in, line);
+    boost::char_separator<char> sep(" ");
+    boost::tokenizer<decltype(sep)> tokens(line, sep);
+    std::vector<std::string> ary(tokens.begin(), tokens.end());
+    if (ary.size() != 4) throw std::runtime_error("Invalid levelset spec");
+    start_level = ary[0];
+    start_x = boost::lexical_cast<int>(ary[1]);
+    start_y = boost::lexical_cast<int>(ary[2]);
+    start_flipped = boost::lexical_cast<bool>(ary[3]);
+
     while (GetLine(in, line))
     {
         levels.emplace(std::piecewise_construct,

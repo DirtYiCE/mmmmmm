@@ -3,6 +3,7 @@
 #include "boost_format.hpp"
 #include "sdl_ptr.hpp"
 #include "levelset.hpp"
+#include "player.hpp"
 
 #define SDL_ERROR(x)                            \
     throw std::runtime_error(boost_format(      \
@@ -35,8 +36,13 @@ int main(int argc, char** argv)
         renderer = ren.get();
 
         Levelset ls(argv[1]);
+        Player p;
+        p.SetPos(ls.StartX(), ls.StartY());
+        p.Flipped(ls.StartFlipped());
+
         SDL_RenderClear(renderer);
         ls.StartLevel().Render();
+        p.Render();
         SDL_RenderPresent(renderer);
         SDL_Delay(4000);
     }
