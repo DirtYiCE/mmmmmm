@@ -14,7 +14,7 @@ public:
 
 private:
     std::string tileset;
-    char tiles[20][15];
+    char tiles[40][25];
 };
 
 class Levelset
