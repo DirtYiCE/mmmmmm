@@ -30,11 +30,10 @@ public:
 
     SDL_Texture* Texture() { return text.get(); }
 private:
-    void LoadImage(const std::string& file);
     void LoadElements(const std::string& file);
 
     std::map<char, Element> elements;
 
-    TexturePtr text;
+    std::shared_ptr<SDL_Texture> text;
 };
 #endif

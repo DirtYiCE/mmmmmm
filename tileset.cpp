@@ -2,9 +2,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include <fstream>
-#include <SDL_image.h>
 #include "boost_format.hpp"
-#include "getline.hpp"
+#include "utils.hpp"
 #include "tileset.hpp"
 #include "globals.hpp"
 
@@ -27,16 +26,8 @@ Tileset& Tileset::GetTileset(const std::string& file)
 
 Tileset::Tileset(const std::string& file)
 {
-    LoadImage(file + ".png");
+    text = GetTexture(file + ".png");
     LoadElements(file + ".tileset");
-}
-
-void Tileset::LoadImage(const std::string& file)
-{
-    text.reset(IMG_LoadTexture(renderer, file.c_str()));
-    if (!text)
-        throw std::runtime_error(boost_format(
-            "Failed to load %1%, error %2%", file, SDL_GetError()));
 }
 
 static bool XMatch(const std::string& s, int n)

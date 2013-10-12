@@ -2,7 +2,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include <fstream>
-#include "getline.hpp"
+#include "utils.hpp"
 #include "tileset.hpp"
 #include "levelset.hpp"
 #include "globals.hpp"

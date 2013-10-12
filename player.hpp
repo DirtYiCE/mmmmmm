@@ -26,7 +26,7 @@ public:
 private:
     bool Coll(const Level& level, int x, int y);
 
-    TexturePtr texture;
+    std::shared_ptr<SDL_Texture> texture;
     double x = 0, y = 0;
     bool flip = false;
     bool left = false;

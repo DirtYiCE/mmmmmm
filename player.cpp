@@ -1,14 +1,10 @@
-#include <SDL_image.h>
 #include "levelset.hpp"
 #include "tileset.hpp"
 #include "player.hpp"
+#include "utils.hpp"
 #include "globals.hpp"
 
-Player::Player() : texture(IMG_LoadTexture(renderer, "man.png"))
-{
-    if (!texture)
-        throw std::runtime_error("Failed to load man.png");
-}
+Player::Player() : texture(GetTexture("man.png")) {}
 
 void Player::Render() const
 {
@@ -65,7 +61,7 @@ void Player::Simul(const Level& level, double dt, bool left, bool right)
     y += dt * (flip ? -1 : 1) * 200;
 
     int sx = int(x)/8;
-    int ex = int(x+WIDTH)/8;
+    int ex = int(x+WIDTH-1)/8;
     int cy = int(y+(flip ? 0 : HEIGHT))/8;
 
     standing = false;
@@ -79,14 +75,14 @@ void Player::Simul(const Level& level, double dt, bool left, bool right)
 
     x += dt * dir * 200;
     sx = int(x)/8;
-    ex = int(x+WIDTH)/8;
+    ex = int(x+WIDTH-1)/8;
     int sy = int(y)/8;
     int ey = int(y+HEIGHT-1)/8;
 
     for (int iy = sy; iy <= ey; ++iy)
     {
         if (Coll(level, sx, iy)) x = sx*8+8;
-        if (Coll(level, ex, iy)) x = ex*8-WIDTH-1;
+        if (Coll(level, ex, iy)) x = ex*8-WIDTH;
     }
 
 }
