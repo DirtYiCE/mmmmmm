@@ -31,20 +31,64 @@ int main(int argc, char** argv)
         if (!win) SDL_ERROR("creating window");
         window = win.get();
 
-        RendererPtr ren(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED));
+        RendererPtr ren(SDL_CreateRenderer(
+            window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
         if (!ren) SDL_ERROR("creating renderer");
         renderer = ren.get();
 
+        auto keys = SDL_GetKeyboardState(nullptr);
+
         Levelset ls(argv[1]);
+        const Level* l = &ls.StartLevel();
         Player p;
         p.SetPos(ls.StartX(), ls.StartY());
         p.Flipped(ls.StartFlipped());
 
-        SDL_RenderClear(renderer);
-        ls.StartLevel().Render();
-        p.Render();
-        SDL_RenderPresent(renderer);
-        SDL_Delay(4000);
+        bool run = true;
+        auto start = SDL_GetPerformanceCounter();
+        while (run)
+        {
+            SDL_Event ev;
+            while (SDL_PollEvent(&ev))
+            {
+                if ((ev.type == SDL_WINDOWEVENT && ev.window.event == SDL_WINDOWEVENT_CLOSE) ||
+                    (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_ESCAPE))
+                    run = false;
+                else if (ev.type == SDL_KEYDOWN)
+                    switch (ev.key.keysym.scancode)
+                    {
+                    case SDL_SCANCODE_SPACE:
+                    case SDL_SCANCODE_W:
+                    case SDL_SCANCODE_S:
+                    case SDL_SCANCODE_UP:
+                    case SDL_SCANCODE_DOWN:
+                        p.Flip();
+                        break;
+
+                    default: ;//stfu
+                    }
+            }
+
+            auto now = SDL_GetPerformanceCounter();
+            double dt = double(now-start) / SDL_GetPerformanceFrequency();
+            start = now;
+
+            if (p.NeedsReset(dt))
+            {
+                l = &ls.StartLevel();
+                p.SetPos(ls.StartX(), ls.StartY());
+                p.Flipped(ls.StartFlipped());
+            }
+
+            p.Simul(*l, dt,
+                    keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],
+                    keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]);
+
+            SDL_RenderClear(renderer);
+            l->Render();
+            p.Render();
+            SDL_RenderPresent(renderer);
+        }
     }
     catch (const std::exception& e)
     {

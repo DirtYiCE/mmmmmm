@@ -23,9 +23,14 @@ Level::Level(std::istream& in) : tiles()
     }
 }
 
+Tileset& Level::Tileset() const
+{
+    return Tileset::GetTileset(tileset);
+}
+
 void Level::Render() const
 {
-    auto& ts = Tileset::GetTileset(tileset);
+    auto& ts = Tileset();
     for (unsigned x = 0; x < 40; ++x)
         for (unsigned y = 0; y < 25; ++y)
             if (tiles[x][y])

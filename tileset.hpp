@@ -16,6 +16,7 @@ public:
     {
         HAS_DIRECTION = 1 << 0,
         KILL          = 1 << 1,
+        SOLID         = 1 << 2,
     };
     struct Element
     {

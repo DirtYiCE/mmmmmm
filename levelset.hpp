@@ -5,12 +5,15 @@
 #include <map>
 #include <iostream>
 
+class Tileset;
 class Level
 {
 public:
     Level(std::istream& in);
 
     void Render() const;
+    char Tile(int x, int y) const { return tiles[x][y]; }
+    class Tileset& Tileset() const;
 
 private:
     std::string tileset;
