@@ -12,14 +12,17 @@ public:
     static const int HEIGHT = 16;
 
     Checkpoint(const std::vector<std::string>& args);
+    Checkpoint(const Checkpoint& o);
     ~Checkpoint();
+    void operator=(const Checkpoint&) = delete;
 
     void Render() override;
     void Interact(Player& p) override;
 
 private:
     std::shared_ptr<SDL_Texture> text;
-    static Checkpoint* active_cp;
+    int* handle;
+    static int* active_cp;
 };
 
 #endif

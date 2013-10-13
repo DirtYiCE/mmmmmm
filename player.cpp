@@ -55,18 +55,28 @@ bool Player::Coll(int x, int y)
     return false;
 }
 
-bool Player::NeedsReset(double dt)
+void Player::CheckReset(double dt)
 {
     if (killed)
     {
         killed -= dt;
         if (killed <= 0)
         {
-            killed = 0;
-            return true;
+            Reset();
+            return;
         }
     }
-    return false;
+}
+
+void Player::Reset()
+{
+    killed = 0;
+    x = respawn_x;
+    y = respawn_y;
+    flip = respawn_flip;
+    dir = 0;
+    if (level.Name() != respawn_level)
+        level = level.OwnerLevelset().LevelFromName(respawn_level);
 }
 
 void Player::Simul(double dt, bool left, bool right)
@@ -75,10 +85,12 @@ void Player::Simul(double dt, bool left, bool right)
 
     const double ACCEL_MUL = 8;
     if (!(left || right))
+    {
         if (dir > 0)
             dir -= std::min(dir, dt*ACCEL_MUL);
         else
             dir += std::min(-dir, dt*ACCEL_MUL);
+    }
     if (left) dir -= dt*ACCEL_MUL;
     if (right) dir += dt*ACCEL_MUL;
     if (dir > 1) dir = 1;

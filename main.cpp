@@ -15,6 +15,7 @@ SDL_Window* window;
 SDL_Renderer* renderer;
 int respawn_x, respawn_y;
 bool respawn_flip;
+std::string respawn_level;
 Level level;
 
 int main(int argc, char** argv)
@@ -45,8 +46,7 @@ int main(int argc, char** argv)
         ls.SetRespawns();
         level = ls.StartLevel();
         Player p;
-        p.SetPos(respawn_x, respawn_y);
-        p.Flipped(respawn_flip);
+        p.Reset();
 
         bool run = true;
         auto start = SDL_GetPerformanceCounter();
@@ -77,13 +77,7 @@ int main(int argc, char** argv)
             double dt = double(now-start) / SDL_GetPerformanceFrequency();
             start = now;
 
-            if (p.NeedsReset(dt))
-            {
-                level = ls.StartLevel();
-                p.SetPos(respawn_x, respawn_y);
-                p.Flipped(respawn_flip);
-            }
-
+            p.CheckReset(dt);
             level.Simul(dt);
             p.Simul(dt,
                     keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],

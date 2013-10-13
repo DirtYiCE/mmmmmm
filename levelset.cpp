@@ -108,4 +108,5 @@ void Levelset::SetRespawns() const
     respawn_x = start_x;
     respawn_y = start_y;
     respawn_flip = start_flipped;
+    respawn_level = start_level;
 }

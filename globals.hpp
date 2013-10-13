@@ -3,6 +3,7 @@
 #pragma once
 
 #include <SDL.h>
+#include <string>
 
 extern const int SCREEN_MUL;
 
@@ -11,6 +12,7 @@ extern SDL_Renderer* renderer;
 
 extern int respawn_x, respawn_y;
 extern bool respawn_flip;
+extern std::string respawn_level;
 
 class Level;
 extern Level level;

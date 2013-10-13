@@ -13,8 +13,10 @@ public:
     Player();
 
     void Render() const;
-    bool NeedsReset(double dt);
+    void CheckReset(double dt);
     void Simul(double dt, bool left, bool right);
+
+    void Reset();
 
     void SetPos(int x, int y) { this->x = x; this->y = y; }
     void Flip() { if (standing && !killed) flip = !flip; }
