@@ -7,17 +7,23 @@
 #include "utils.hpp"
 #include "globals.hpp"
 
-Level::Level(std::istream& in) : tiles()
+Level::Level(Levelset& ls, const std::string& name, std::istream& in)
+    : ls(&ls), name(name), tiles()
 {
     GetLine(in, tileset);
-
     std::string line;
-    for (size_t j = 0; j < 25; ++j)
+    GetLine(in, line);
+    auto ary = Split(line);
+    if (ary.size() != 4)
+        throw std::runtime_error("Invalid level neighbor specifiaction");
+    std::copy(ary.begin(), ary.end(), neighbors.begin());
+
+    for (size_t j = 0; j < HEIGHT; ++j)
     {
-        j == 0 ? GetLine(in, line) : getline(in, line);
+        getline(in, line);
         if (!in.good()) throw std::runtime_error("level truncated");
 
-        size_t n = std::min(size_t(line.length()), size_t(40));
+        size_t n = std::min(size_t(line.length()), size_t(WIDTH));
         for (size_t i = 0; i < n; ++i)
             tiles[i][j] = (line[i] == ' ') ? 0 : line[i];
     }
@@ -44,8 +50,8 @@ void Level::Simul(double dt)
 void Level::Render() const
 {
     auto& ts = Tileset();
-    for (unsigned x = 0; x < 40; ++x)
-        for (unsigned y = 0; y < 25; ++y)
+    for (unsigned x = 0; x < WIDTH; ++x)
+        for (unsigned y = 0; y < HEIGHT; ++y)
             if (tiles[x][y])
             {
                 auto& el = ts.GetElement(tiles[x][y]);
@@ -53,14 +59,14 @@ void Level::Render() const
                 if (el.flags & Tileset::HAS_DIRECTION)
                 {
                     char n = el.neighbor;
-                    if (x == 39 ||            tiles[x+1][y]   == n) k |= 1;
-                    if (x == 39 || y == 0  || tiles[x+1][y-1] == n) k |= 2;
-                    if (           y == 0  || tiles[x]  [y-1] == n) k |= 4;
-                    if (x == 0  || y == 0  || tiles[x-1][y-1] == n) k |= 8;
-                    if (x == 0  ||            tiles[x-1][y]   == n) k |= 16;
-                    if (x == 0  || y == 24 || tiles[x-1][y+1] == n) k |= 32;
-                    if (           y == 24 || tiles[x]  [y+1] == n) k |= 64;
-                    if (x == 39 || y == 24 || tiles[x+1][y+1] == n) k |= 128;
+                    if (x == WIDTH-1 ||                  tiles[x+1][y]   == n) k |= 1;
+                    if (x == WIDTH-1 || y == 0        || tiles[x+1][y-1] == n) k |= 2;
+                    if (                y == 0        || tiles[x]  [y-1] == n) k |= 4;
+                    if (x == 0       || y == 0        || tiles[x-1][y-1] == n) k |= 8;
+                    if (x == 0       ||                  tiles[x-1][y]   == n) k |= 16;
+                    if (x == 0       || y == HEIGHT-1 || tiles[x-1][y+1] == n) k |= 32;
+                    if (                y == HEIGHT-1 || tiles[x]  [y+1] == n) k |= 64;
+                    if (x == WIDTH-1 || y == HEIGHT-1 || tiles[x+1][y+1] == n) k |= 128;
                 }
 
                 SDL_Rect s = { int(el.coords[k][0]*8), int(el.coords[k][1]*8), 8, 8 };
@@ -90,7 +96,7 @@ Levelset::Levelset(const std::string& file)
     {
         levels.emplace(std::piecewise_construct,
                        std::forward_as_tuple(line),
-                       std::forward_as_tuple(in));
+                       std::forward_as_tuple(*this, line, in));
     }
 
     if (in.bad() || levels.size() == 0)

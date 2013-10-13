@@ -12,4 +12,7 @@ extern SDL_Renderer* renderer;
 extern int respawn_x, respawn_y;
 extern bool respawn_flip;
 
+class Level;
+extern Level level;
+
 #endif

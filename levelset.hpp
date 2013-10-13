@@ -10,21 +10,34 @@
 #include "entity.hpp"
 
 class Tileset;
+class Levelset;
 
 class Level
 {
 public:
-    Level(std::istream& in);
+    static constexpr int WIDTH = 40;
+    static constexpr int HEIGHT = 25;
+
+    Level() = default;
+    Level(Levelset& ls, const std::string& name, std::istream& in);
 
     void Simul(double dt);
     void Render() const;
     char Tile(int x, int y) const { return tiles[x][y]; }
     class Tileset& Tileset() const;
+    const std::string& Neighbor(int dir) { return neighbors.at(dir); }
 
     const std::vector<ClonePtr<Entity>>& Entities() const { return ents; }
+
+    const Levelset& OwnerLevelset() const { return *ls; }
+    Levelset& OwnerLevelset() { return *ls; }
+    const std::string& Name() const { return name; }
 private:
+    Levelset* ls;
+    std::string name;
     std::string tileset;
-    char tiles[40][25];
+    char tiles[WIDTH][HEIGHT];
+    std::array<std::string, 4> neighbors;
     std::vector<ClonePtr<Entity>> ents;
 };
 
@@ -38,6 +51,8 @@ public:
     int StartY() const { return start_y; }
     bool StartFlipped() const { return start_flipped; }
     void SetRespawns() const;
+
+    const Level& LevelFromName(const std::string& name) { return levels.at(name); }
 
 private:
     std::map<std::string, Level> levels;

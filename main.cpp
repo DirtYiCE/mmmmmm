@@ -15,6 +15,7 @@ SDL_Window* window;
 SDL_Renderer* renderer;
 int respawn_x, respawn_y;
 bool respawn_flip;
+Level level;
 
 int main(int argc, char** argv)
 {
@@ -42,7 +43,7 @@ int main(int argc, char** argv)
 
         Levelset ls(argv[1]);
         ls.SetRespawns();
-        Level l(ls.StartLevel());
+        level = ls.StartLevel();
         Player p;
         p.SetPos(respawn_x, respawn_y);
         p.Flipped(respawn_flip);
@@ -78,18 +79,18 @@ int main(int argc, char** argv)
 
             if (p.NeedsReset(dt))
             {
-                l = ls.StartLevel();
+                level = ls.StartLevel();
                 p.SetPos(respawn_x, respawn_y);
                 p.Flipped(respawn_flip);
             }
 
-            l.Simul(dt);
-            p.Simul(l, dt,
+            level.Simul(dt);
+            p.Simul(dt,
                     keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],
                     keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]);
 
             SDL_RenderClear(renderer);
-            l.Render();
+            level.Render();
             p.Render();
             SDL_RenderPresent(renderer);
         }

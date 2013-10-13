@@ -4,8 +4,6 @@
 
 #include "sdl_ptr.hpp"
 
-class Level;
-
 class Player
 {
 public:
@@ -16,7 +14,7 @@ public:
 
     void Render() const;
     bool NeedsReset(double dt);
-    void Simul(const Level& level, double dt, bool left, bool right);
+    void Simul(double dt, bool left, bool right);
 
     void SetPos(int x, int y) { this->x = x; this->y = y; }
     void Flip() { if (standing && !killed) flip = !flip; }
@@ -24,7 +22,7 @@ public:
     void Flipped(bool f) { flip = f; }
 
 private:
-    bool Coll(const Level& level, int x, int y);
+    bool Coll(int x, int y);
 
     std::shared_ptr<SDL_Texture> texture;
     double x = 0, y = 0;
@@ -32,6 +30,7 @@ private:
     bool left = false;
     double killed = 0;
     bool standing;
+    double dir = 0;
 };
 
 #endif

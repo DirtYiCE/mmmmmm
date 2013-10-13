@@ -11,17 +11,39 @@ void Player::Render() const
     SDL_Rect s = { killed ? WIDTH : 0, 0, WIDTH, HEIGHT };
     SDL_Rect d = { int(x) * SCREEN_MUL, int(y) * SCREEN_MUL,
                    WIDTH * SCREEN_MUL, HEIGHT * SCREEN_MUL };
-    int flag = (flip ? SDL_FLIP_VERTICAL : 0) | (left ? SDL_FLIP_HORIZONTAL : 0);
+    auto flag = SDL_RendererFlip(
+        (flip ? SDL_FLIP_VERTICAL : 0) | (left ? SDL_FLIP_HORIZONTAL : 0));
 
     if (killed)
         SDL_SetTextureColorMod(texture.get(), 255, 0, 0);
     else
         SDL_SetTextureColorMod(texture.get(), 100, 255, 100);
-    SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr,
-                     SDL_RendererFlip(flag));
+
+    SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
+
+    if (x > Level::WIDTH*8-WIDTH && level.Neighbor(0) == level.Name())
+    {
+        d.x -= Level::WIDTH*8*SCREEN_MUL;
+        SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
+    }
+    if (x < 0 && level.Neighbor(2) == level.Name())
+    {
+        d.x += Level::WIDTH*8*SCREEN_MUL;
+        SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
+    }
+    if (y > Level::HEIGHT*8-HEIGHT && level.Neighbor(3) == level.Name())
+    {
+        d.y -= Level::HEIGHT*8*SCREEN_MUL;
+        SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
+    }
+    if (y < 0 && level.Neighbor(1) == level.Name())
+    {
+        d.y += Level::HEIGHT*8*SCREEN_MUL;
+        SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
+    }
 }
 
-bool Player::Coll(const Level& level, int x, int y)
+bool Player::Coll(int x, int y)
 {
     char c = level.Tile(x, y);
     if (c)
@@ -47,42 +69,50 @@ bool Player::NeedsReset(double dt)
     return false;
 }
 
-void Player::Simul(const Level& level, double dt, bool left, bool right)
+void Player::Simul(double dt, bool left, bool right)
 {
     if (killed) return;
 
-    int dir = 0;
-    if (left) dir -= 1;
-    if (right) dir += 1;
+    const double ACCEL_MUL = 8;
+    if (!(left || right))
+        if (dir > 0)
+            dir -= std::min(dir, dt*ACCEL_MUL);
+        else
+            dir += std::min(-dir, dt*ACCEL_MUL);
+    if (left) dir -= dt*ACCEL_MUL;
+    if (right) dir += dt*ACCEL_MUL;
+    if (dir > 1) dir = 1;
+    if (dir < -1) dir = -1;
 
     if (dir < 0) this->left = true;
     if (dir > 0) this->left = false;
 
     y += dt * (flip ? -1 : 1) * 200;
 
-    int sx = int(x)/8;
-    int ex = int(x+WIDTH-1)/8;
-    int cy = int(y+(flip ? 0 : HEIGHT))/8;
+    int sx = std::max(int(x)/8, 0);
+    int ex = std::min(int(x+WIDTH-1)/8, Level::WIDTH-1);
+    int cy = int(y+(flip ? 0 : HEIGHT))/8; // TODO: ha out of range, skip?
 
     standing = false;
-    for (int ix = sx; ix <= ex; ++ix)
-        if (Coll(level, ix, cy))
-        {
-            y = cy*8 + (flip ? 8 : -HEIGHT);
-            standing = true;
-            break;
-        }
+    if (cy >= 0 && cy < Level::HEIGHT)
+        for (int ix = sx; ix <= ex; ++ix)
+            if (Coll(ix, cy))
+            {
+                y = cy*8 + (flip ? 8 : -HEIGHT);
+                standing = true;
+                break;
+            }
 
     x += dt * dir * 200;
-    sx = int(x)/8;
-    ex = int(x+WIDTH-1)/8;
-    int sy = int(y)/8;
-    int ey = int(y+HEIGHT-1)/8;
+    sx = std::max(int(x)/8, 0);
+    ex = std::min(int(x+WIDTH-1)/8, Level::WIDTH-1);
+    int sy = std::max(int(y)/8, 0);
+    int ey = std::min(int(y+HEIGHT-1)/8, Level::HEIGHT-1);
 
     for (int iy = sy; iy <= ey; ++iy)
     {
-        if (Coll(level, sx, iy)) x = sx*8+8;
-        if (Coll(level, ex, iy)) x = ex*8-WIDTH;
+        if (Coll(sx, iy)) x = sx*8+8;
+        if (Coll(ex, iy)) x = ex*8-WIDTH;
     }
 
     for (auto& et: level.Entities())
@@ -91,4 +121,17 @@ void Player::Simul(const Level& level, double dt, bool left, bool right)
               y + HEIGHT < et->Y() ||
               y > et->Y() + et->Height()))
             et->Interact(*this);
+
+#define CHK_WRAP(c, op, var, pm, neigh)                             \
+    if (c op -var/2)                                                \
+    {                                                               \
+        c pm##= Level::var*8;                                       \
+        auto& nlevel = level.Neighbor(neigh);                       \
+        if (nlevel != level.Name())                                 \
+            level = level.OwnerLevelset().LevelFromName(nlevel);    \
+    }
+    CHK_WRAP(x, > Level::WIDTH*8,  WIDTH,  -, 0);
+    CHK_WRAP(x, <,                 WIDTH,  +, 2);
+    CHK_WRAP(y, > Level::HEIGHT*8, HEIGHT, -, 3);
+    CHK_WRAP(y, <,                 HEIGHT, +, 1);
 }
