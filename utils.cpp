@@ -1,4 +1,5 @@
 #include <SDL_image.h>
+#include <boost/tokenizer.hpp>
 #include <map>
 #include "boost_format.hpp"
 #include "utils.hpp"
@@ -30,4 +31,11 @@ std::shared_ptr<SDL_Texture> GetTexture(const std::string& str)
             "Failed to load image '%1%', error %2%", str, IMG_GetError()));
     map[str] = ptr;
     return ptr;
+}
+
+std::vector<std::string> Split(const std::string& str, const char* sep)
+{
+    boost::char_separator<char> bsep(sep);
+    boost::tokenizer<decltype(bsep)> tokens(str, bsep);
+    return std::vector<std::string>(tokens.begin(), tokens.end());
 }

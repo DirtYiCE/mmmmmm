@@ -53,9 +53,9 @@ public:
     EntityFactory(const EntityFactory&) = delete;
     void operator=(const EntityFactory&) = delete;
 
-    virtual ClonePtr<Entity> ICreate(std::vector<std::string>& args) = 0;
+    virtual ClonePtr<Entity> ICreate(const std::vector<std::string>& args) = 0;
 
-    static ClonePtr<Entity> Create(std::vector<std::string>& args)
+    static ClonePtr<Entity> Create(const std::vector<std::string>& args)
     {
         return GetEMap().at(args.at(0))->ICreate(args);
     }
@@ -75,7 +75,7 @@ class EntityFactoryImpl : public EntityFactory
 public:
     using EntityFactory::EntityFactory;
 
-    ClonePtr<Entity> ICreate(std::vector<std::string>& args) override
+    ClonePtr<Entity> ICreate(const std::vector<std::string>& args) override
     {
         return ClonePtr<Entity>(new T(args));
     }

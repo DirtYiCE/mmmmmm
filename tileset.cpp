@@ -1,6 +1,5 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
 #include <fstream>
 #include "boost_format.hpp"
 #include "utils.hpp"
@@ -59,11 +58,9 @@ void Tileset::LoadElements(const std::string& file)
     std::ifstream in(file);
 
     std::string line;
-    boost::char_separator<char> sep(" ");
     while (GetLine(in, line))
     {
-        boost::tokenizer<decltype(sep)> tokens(line, sep);
-        std::vector<std::string> ary(tokens.begin(), tokens.end());
+        auto ary = Split(line);
         if (ary.size() < 4)
             throw std::runtime_error("Tileset line too short");
         if (ary[0].size() != 1)

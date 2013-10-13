@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
 #include <fstream>
 #include "entity.hpp"
 #include "levelset.hpp"
@@ -23,14 +22,10 @@ Level::Level(std::istream& in) : tiles()
             tiles[i][j] = (line[i] == ' ') ? 0 : line[i];
     }
 
-    boost::char_separator<char> sep(" ");
     GetLine(in, line);
     while (line != "end")
     {
-        boost::tokenizer<decltype(sep)> tokens(line, sep);
-        std::vector<std::string> ary(tokens.begin(), tokens.end());
-        ents.push_back(EntityFactory::Create(ary));
-
+        ents.push_back(EntityFactory::Create(Split(line)));
         GetLine(in, line);
     }
 }
@@ -84,9 +79,7 @@ Levelset::Levelset(const std::string& file)
     std::string line;
 
     GetLine(in, line);
-    boost::char_separator<char> sep(" ");
-    boost::tokenizer<decltype(sep)> tokens(line, sep);
-    std::vector<std::string> ary(tokens.begin(), tokens.end());
+    auto ary = Split(line);
     if (ary.size() != 4) throw std::runtime_error("Invalid levelset spec");
     start_level = ary[0];
     start_x = boost::lexical_cast<int>(ary[1]);

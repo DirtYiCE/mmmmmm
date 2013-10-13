@@ -3,9 +3,11 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 #include "sdl_ptr.hpp"
 
 bool GetLine(std::istream& in, std::string& str);
 std::shared_ptr<SDL_Texture> GetTexture(const std::string& str);
+std::vector<std::string> Split(const std::string& str, const char* sep = " ");
 
 #endif
