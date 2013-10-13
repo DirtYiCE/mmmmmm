@@ -21,22 +21,22 @@ void Player::Render() const
 
     SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
 
-    if (x > Level::WIDTH*8-WIDTH && level.Neighbor(0) == level.Name())
+    if (x > Level::WIDTH*8-WIDTH && level.Neighbor(RIGHT) == level.Name())
     {
         d.x -= Level::WIDTH*8*SCREEN_MUL;
         SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
     }
-    if (x < 0 && level.Neighbor(2) == level.Name())
+    if (x < 0 && level.Neighbor(LEFT) == level.Name())
     {
         d.x += Level::WIDTH*8*SCREEN_MUL;
         SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
     }
-    if (y > Level::HEIGHT*8-HEIGHT && level.Neighbor(3) == level.Name())
+    if (y > Level::HEIGHT*8-HEIGHT && level.Neighbor(DOWN) == level.Name())
     {
         d.y -= Level::HEIGHT*8*SCREEN_MUL;
         SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
     }
-    if (y < 0 && level.Neighbor(1) == level.Name())
+    if (y < 0 && level.Neighbor(UP) == level.Name())
     {
         d.y += Level::HEIGHT*8*SCREEN_MUL;
         SDL_RenderCopyEx(renderer, texture.get(), &s, &d, 0, nullptr, flag);
@@ -142,8 +142,8 @@ void Player::Simul(double dt, bool left, bool right)
         if (nlevel != level.Name())                                 \
             level = level.OwnerLevelset().LevelFromName(nlevel);    \
     }
-    CHK_WRAP(x, > Level::WIDTH*8,  WIDTH,  -, 0);
-    CHK_WRAP(x, <,                 WIDTH,  +, 2);
-    CHK_WRAP(y, > Level::HEIGHT*8, HEIGHT, -, 3);
-    CHK_WRAP(y, <,                 HEIGHT, +, 1);
+    CHK_WRAP(x, > Level::WIDTH*8,  WIDTH,  -, RIGHT);
+    CHK_WRAP(x, <,                 WIDTH,  +, LEFT);
+    CHK_WRAP(y, > Level::HEIGHT*8, HEIGHT, -, DOWN);
+    CHK_WRAP(y, <,                 HEIGHT, +, UP);
 }

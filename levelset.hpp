@@ -12,6 +12,14 @@
 class Tileset;
 class Levelset;
 
+enum Direction
+{
+    RIGHT = 0,
+    UP,
+    LEFT,
+    DOWN,
+};
+
 class Level
 {
 public:
@@ -25,7 +33,7 @@ public:
     void Render() const;
     char Tile(int x, int y) const { return tiles[x][y]; }
     class Tileset& Tileset() const;
-    const std::string& Neighbor(int dir) { return neighbors.at(dir); }
+    const std::string& Neighbor(Direction dir) { return neighbors.at(dir); }
 
     const std::vector<ClonePtr<Entity>>& Entities() const { return ents; }
 
