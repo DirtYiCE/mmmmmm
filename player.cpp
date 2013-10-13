@@ -85,4 +85,10 @@ void Player::Simul(const Level& level, double dt, bool left, bool right)
         if (Coll(level, ex, iy)) x = ex*8-WIDTH;
     }
 
+    for (auto& et: level.Entities())
+        if (!(x + WIDTH < et->X() ||
+              x > et->X() + et->Width() ||
+              y + HEIGHT < et->Y() ||
+              y > et->Y() + et->Height()))
+            et->Interact(*this);
 }

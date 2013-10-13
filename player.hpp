@@ -9,8 +9,8 @@ class Level;
 class Player
 {
 public:
-    static const int WIDTH = 8;
-    static const int HEIGHT = 16;
+    static const int WIDTH = 9;
+    static const int HEIGHT = 20;
 
     Player();
 

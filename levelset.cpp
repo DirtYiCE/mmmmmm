@@ -2,9 +2,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include <fstream>
-#include "utils.hpp"
-#include "tileset.hpp"
+#include "entity.hpp"
 #include "levelset.hpp"
+#include "tileset.hpp"
+#include "utils.hpp"
 #include "globals.hpp"
 
 Level::Level(std::istream& in) : tiles()
@@ -21,11 +22,28 @@ Level::Level(std::istream& in) : tiles()
         for (size_t i = 0; i < n; ++i)
             tiles[i][j] = (line[i] == ' ') ? 0 : line[i];
     }
+
+    boost::char_separator<char> sep(" ");
+    GetLine(in, line);
+    while (line != "end")
+    {
+        boost::tokenizer<decltype(sep)> tokens(line, sep);
+        std::vector<std::string> ary(tokens.begin(), tokens.end());
+        ents.push_back(EntityFactory::Create(ary));
+
+        GetLine(in, line);
+    }
 }
 
 Tileset& Level::Tileset() const
 {
     return Tileset::GetTileset(tileset);
+}
+
+void Level::Simul(double dt)
+{
+    for (auto& ptr : ents)
+        ptr->Simul(dt);
 }
 
 void Level::Render() const
@@ -55,6 +73,9 @@ void Level::Render() const
                                8*SCREEN_MUL, 8*SCREEN_MUL };
                 SDL_RenderCopy(renderer, ts.Texture(), &s, &d);
             }
+
+    for (auto& ptr : ents)
+        ptr->Render();
 }
 
 Levelset::Levelset(const std::string& file)
@@ -81,4 +102,11 @@ Levelset::Levelset(const std::string& file)
 
     if (in.bad() || levels.size() == 0)
         throw std::runtime_error("Levelset: no levels loaded");
+}
+
+void Levelset::SetRespawns() const
+{
+    respawn_x = start_x;
+    respawn_y = start_y;
+    respawn_flip = start_flipped;
 }

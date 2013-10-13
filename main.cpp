@@ -13,6 +13,8 @@ extern const int SCREEN_MUL = 3; // 1: 320x200, 2: 640x400, 3: 960x600, 4: 1280x
 
 SDL_Window* window;
 SDL_Renderer* renderer;
+int respawn_x, respawn_y;
+bool respawn_flip;
 
 int main(int argc, char** argv)
 {
@@ -39,10 +41,11 @@ int main(int argc, char** argv)
         auto keys = SDL_GetKeyboardState(nullptr);
 
         Levelset ls(argv[1]);
-        const Level* l = &ls.StartLevel();
+        ls.SetRespawns();
+        Level l(ls.StartLevel());
         Player p;
-        p.SetPos(ls.StartX(), ls.StartY());
-        p.Flipped(ls.StartFlipped());
+        p.SetPos(respawn_x, respawn_y);
+        p.Flipped(respawn_flip);
 
         bool run = true;
         auto start = SDL_GetPerformanceCounter();
@@ -75,17 +78,18 @@ int main(int argc, char** argv)
 
             if (p.NeedsReset(dt))
             {
-                l = &ls.StartLevel();
-                p.SetPos(ls.StartX(), ls.StartY());
-                p.Flipped(ls.StartFlipped());
+                l = ls.StartLevel();
+                p.SetPos(respawn_x, respawn_y);
+                p.Flipped(respawn_flip);
             }
 
-            p.Simul(*l, dt,
+            l.Simul(dt);
+            p.Simul(l, dt,
                     keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],
                     keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]);
 
             SDL_RenderClear(renderer);
-            l->Render();
+            l.Render();
             p.Render();
             SDL_RenderPresent(renderer);
         }
