@@ -71,8 +71,8 @@ void Tileset::LoadElements(const std::string& file)
         el.flags = Flags(boost::lexical_cast<std::underlying_type<Flags>::type>(ary[1]));
         bool dir = el.flags & Flags::HAS_DIRECTION;
 
-        el.coords[0][0] = boost::lexical_cast<int>(ary[2]);
-        el.coords[0][1] = boost::lexical_cast<int>(ary[3]);
+        el.coords[0].x = boost::lexical_cast<int>(ary[2]);
+        el.coords[0].y = boost::lexical_cast<int>(ary[3]);
 
         if (dir)
         {
@@ -82,10 +82,7 @@ void Tileset::LoadElements(const std::string& file)
             el.neighbor = ary[4][0];
 
             for (size_t i = 1; i < 256; ++i)
-            {
-                el.coords[i][0] = el.coords[0][0];
-                el.coords[i][1] = el.coords[0][1];
-            }
+                el.coords[i] = el.coords[0];
 
 #ifdef MATCH_DEBUG
             int matched[256] = {0};
@@ -100,8 +97,7 @@ void Tileset::LoadElements(const std::string& file)
 #ifdef MATCH_DEBUG
                         ++matched[k];
 #endif
-                        el.coords[k][0] = x;
-                        el.coords[k][1] = y;
+                        el.coords[k] = { x, y };
                     }
             }
 

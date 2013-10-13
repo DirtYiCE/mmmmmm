@@ -10,4 +10,14 @@ bool GetLine(std::istream& in, std::string& str);
 std::shared_ptr<SDL_Texture> GetTexture(const std::string& str);
 std::vector<std::string> Split(const std::string& str, const char* sep = " ");
 
+struct Point
+{
+    int x, y;
+};
+
+struct Color
+{
+    uint8_t r, g, b, a;
+};
+
 #endif

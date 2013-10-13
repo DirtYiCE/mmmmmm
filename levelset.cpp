@@ -69,7 +69,7 @@ void Level::Render() const
                     if (x == WIDTH-1 || y == HEIGHT-1 || tiles[x+1][y+1] == n) k |= 128;
                 }
 
-                SDL_Rect s = { int(el.coords[k][0]*8), int(el.coords[k][1]*8), 8, 8 };
+                SDL_Rect s = { int(el.coords[k].x*8), int(el.coords[k].y*8), 8, 8 };
                 SDL_Rect d = { int(x*8*SCREEN_MUL), int(y*8*SCREEN_MUL),
                                8*SCREEN_MUL, 8*SCREEN_MUL };
                 SDL_RenderCopy(renderer, ts.Texture(), &s, &d);

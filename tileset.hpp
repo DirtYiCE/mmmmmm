@@ -4,6 +4,7 @@
 
 #include <map>
 #include "sdl_ptr.hpp"
+#include "utils.hpp"
 
 class Tileset
 {
@@ -17,11 +18,12 @@ public:
         HAS_DIRECTION = 1 << 0,
         KILL          = 1 << 1,
         SOLID         = 1 << 2,
+        COLORED       = 1 << 3,
     };
     struct Element
     {
         Flags flags;
-        unsigned coords[256][2];
+        std::array<Point, 256> coords;
         char neighbor;
     };
 
