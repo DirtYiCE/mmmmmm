@@ -2,7 +2,6 @@
 #include <boost/lexical_cast.hpp>
 #include <fstream>
 #include "boost_format.hpp"
-#include "utils.hpp"
 #include "tileset.hpp"
 #include "globals.hpp"
 

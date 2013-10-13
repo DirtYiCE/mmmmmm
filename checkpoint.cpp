@@ -2,7 +2,6 @@
 #include "checkpoint.hpp"
 #include "levelset.hpp"
 #include "player.hpp"
-#include "utils.hpp"
 #include "globals.hpp"
 
 int* Checkpoint::active_cp = nullptr;

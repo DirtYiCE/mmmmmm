@@ -8,6 +8,7 @@
 #include <vector>
 #include "clone_ptr.hpp"
 #include "entity.hpp"
+#include "utils.hpp"
 
 class Tileset;
 class Levelset;
@@ -40,12 +41,14 @@ public:
     const Levelset& OwnerLevelset() const { return *ls; }
     Levelset& OwnerLevelset() { return *ls; }
     const std::string& Name() const { return name; }
+
 private:
     Levelset* ls;
     std::string name;
     std::string tileset;
-    char tiles[WIDTH][HEIGHT];
     std::array<std::string, 4> neighbors;
+    Color color;
+    char tiles[WIDTH][HEIGHT];
     std::vector<ClonePtr<Entity>> ents;
 };
 

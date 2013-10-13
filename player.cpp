@@ -1,7 +1,6 @@
 #include "levelset.hpp"
 #include "tileset.hpp"
 #include "player.hpp"
-#include "utils.hpp"
 #include "globals.hpp"
 
 Player::Player() : texture(GetTexture("man.png")) {}

@@ -4,7 +4,6 @@
 #include "entity.hpp"
 #include "levelset.hpp"
 #include "tileset.hpp"
-#include "utils.hpp"
 #include "globals.hpp"
 
 Level::Level(Levelset& ls, const std::string& name, std::istream& in)
@@ -17,6 +16,14 @@ Level::Level(Levelset& ls, const std::string& name, std::istream& in)
     if (ary.size() != 4)
         throw std::runtime_error("Invalid level neighbor specifiaction");
     std::copy(ary.begin(), ary.end(), neighbors.begin());
+
+    GetLine(in, line);
+    ary = Split(line);
+    if (ary.size() != 3)
+        throw std::runtime_error("Invalid level color");
+    color = { uint8_t(boost::lexical_cast<int>(ary[0])),
+              uint8_t(boost::lexical_cast<int>(ary[1])),
+              uint8_t(boost::lexical_cast<int>(ary[2])) };
 
     for (size_t j = 0; j < HEIGHT; ++j)
     {
@@ -72,6 +79,10 @@ void Level::Render() const
                 SDL_Rect s = { int(el.coords[k].x*8), int(el.coords[k].y*8), 8, 8 };
                 SDL_Rect d = { int(x*8*SCREEN_MUL), int(y*8*SCREEN_MUL),
                                8*SCREEN_MUL, 8*SCREEN_MUL };
+                if (el.flags & Tileset::COLORED)
+                    SDL_SetTextureColorMod(ts.Texture(), color.r, color.g, color.b);
+                else
+                    SDL_SetTextureColorMod(ts.Texture(), 255, 255, 255);
                 SDL_RenderCopy(renderer, ts.Texture(), &s, &d);
             }
 
