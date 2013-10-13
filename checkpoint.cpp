@@ -33,7 +33,7 @@ Checkpoint::~Checkpoint()
 
 void Checkpoint::Render()
 {
-    SDL_Rect t = { x*SCREEN_MUL, y*SCREEN_MUL,
+    SDL_Rect t = { int(x)*SCREEN_MUL, int(y)*SCREEN_MUL,
                    WIDTH*SCREEN_MUL, HEIGHT*SCREEN_MUL };
     if (active_cp == handle)
         SDL_SetTextureColorMod(text.get(), 255, 255, 255);

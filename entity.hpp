@@ -21,13 +21,13 @@ public:
 
     virtual ClonePtr<Entity> Clone() const = 0;
 
-    int X() const { return x; }
-    int Y() const { return y; }
+    double X() const { return x; }
+    double Y() const { return y; }
     int Width() const { return width; }
     int Height() const { return height; }
 
 protected:
-    int x, y;
+    double x, y;
     int width, height;
 };
 

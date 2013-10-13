@@ -83,6 +83,7 @@ int main(int argc, char** argv)
                     keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],
                     keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]);
 
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
             level.Render();
             p.Render();

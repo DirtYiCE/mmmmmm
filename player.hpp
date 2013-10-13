@@ -23,6 +23,13 @@ public:
     bool Flipped() const { return flip; }
     void Flipped(bool f) { flip = f; }
 
+    double X() const { return x; }
+    void X(double n) { x = n; }
+    double Y() const { return y; }
+    void Y(double n) { y = n; }
+
+    bool Standing() const { return standing; }
+    void Standing(bool s) { standing = s; }
 private:
     bool Coll(int x, int y);
 

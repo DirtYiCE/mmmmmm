@@ -31,6 +31,8 @@ right start start start
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 checkpoint 16 176
+# box: 168..272
+hplatform 168 40 32 8 168 241
 end
 
 right

@@ -41,13 +41,14 @@ public:
     const Levelset& OwnerLevelset() const { return *ls; }
     Levelset& OwnerLevelset() { return *ls; }
     const std::string& Name() const { return name; }
+    struct Color Color() const { return color; }
 
 private:
     Levelset* ls;
     std::string name;
     std::string tileset;
     std::array<std::string, 4> neighbors;
-    Color color;
+    struct Color color;
     char tiles[WIDTH][HEIGHT];
     std::vector<ClonePtr<Entity>> ents;
 };
