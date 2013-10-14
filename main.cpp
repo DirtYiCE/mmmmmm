@@ -74,14 +74,18 @@ int main(int argc, char** argv)
             }
 
             auto now = SDL_GetPerformanceCounter();
-            double dt = double(now-start) / SDL_GetPerformanceFrequency();
+            double dts = double(now-start) / SDL_GetPerformanceFrequency();
             start = now;
 
-            p.CheckReset(dt);
-            level.Simul(dt);
-            p.Simul(dt,
-                    keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],
-                    keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]);
+            for (double xd = dts; xd > 0; xd -= .01)
+            {
+                double dt = std::min(.01, xd);
+                p.CheckReset(dt);
+                level.Simul(dt);
+                p.Simul(dt,
+                        keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],
+                        keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]);
+            }
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);

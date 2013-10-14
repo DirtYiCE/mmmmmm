@@ -65,6 +65,8 @@ right right start hole
                               %%%%%%%%%%
 %%%%%%%%%%%%%%%%    %%%%%%%%%%%%%%%%%%%%
 checkpoint 220 176
+hflipper 120 27 168
+vflipper 115 32 160
 end
 
 hole
