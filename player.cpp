@@ -48,7 +48,7 @@ bool Player::Coll(int x, int y)
     if (c)
     {
         auto fl = level.Tileset().GetElement(c).flags;
-        if (fl & Tileset::KILL) killed = 1;
+        if (fl & Tileset::KILL) Kill();
         if (fl & Tileset::SOLID) return true;
     }
     return false;

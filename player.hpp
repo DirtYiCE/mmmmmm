@@ -30,6 +30,8 @@ public:
 
     bool Standing() const { return standing; }
     void Standing(bool s) { standing = s; }
+
+    void Kill() { killed = 1; }
 private:
     bool Coll(int x, int y);
 
