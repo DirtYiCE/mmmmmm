@@ -18,6 +18,13 @@ bool respawn_flip;
 std::string respawn_level;
 Level level;
 
+struct Star
+{
+    double x, y;
+    double v;
+};
+std::array<Star, 20> stars;
+
 int main(int argc, char** argv)
 {
     if (argc != 2)
@@ -41,6 +48,14 @@ int main(int argc, char** argv)
         renderer = ren.get();
 
         auto keys = SDL_GetKeyboardState(nullptr);
+
+        srand(time(nullptr));
+        for (Star& s: stars)
+        {
+            s.x = rand() % 320;
+            s.y = rand() % 200;
+            s.v = 150 * (1 + double(rand()) / RAND_MAX);
+        }
 
         Levelset ls(argv[1]);
         ls.SetRespawns();
@@ -89,6 +104,17 @@ int main(int argc, char** argv)
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
+
+            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+            for (Star& s: stars)
+            {
+                s.x -= s.v * dts;
+                if (s.x < 0) s.x = 320;
+                SDL_Rect r = { int(s.x)*SCREEN_MUL, int(s.y)*SCREEN_MUL,
+                               SCREEN_MUL, SCREEN_MUL };
+                SDL_RenderFillRect(renderer, &r);
+            }
+
             level.Render();
             p.Render();
             SDL_RenderPresent(renderer);
