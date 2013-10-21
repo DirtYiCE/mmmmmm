@@ -42,12 +42,14 @@ void Player::Render() const
     }
 }
 
-bool Player::Coll(int x, int y)
+bool Player::Coll(int x, int y, double& extra_mov)
 {
     char c = level.Tile(x, y);
     if (c)
     {
         auto fl = level.Tileset().GetElement(c).flags;
+        if (fl & Tileset::LEFT_MOVING) extra_mov = std::max(extra_mov-1, -1.0);
+        if (fl & Tileset::RIGHT_MOVING) extra_mov = std::min(extra_mov+1, 1.0);
         if (fl & Tileset::KILL) Kill();
         if (fl & Tileset::SOLID) return true;
     }
@@ -104,17 +106,17 @@ void Player::Simul(double dt, bool left, bool right)
     int ex = std::min(int(x+WIDTH-1)/8, Level::WIDTH-1);
     int cy = int(y+(flip ? 0 : HEIGHT))/8; // TODO: ha out of range, skip?
 
+    double extra_mov = 0;
     standing = false;
     if (cy >= 0 && cy < Level::HEIGHT)
         for (int ix = sx; ix <= ex; ++ix)
-            if (Coll(ix, cy))
+            if (Coll(ix, cy, extra_mov))
             {
                 y = cy*8 + (flip ? 8 : -HEIGHT);
                 standing = true;
-                break;
             }
 
-    x += dt * dir * 200;
+    x += dt * (dir * 200 + extra_mov * 150);
     sx = std::max(int(x)/8, 0);
     ex = std::min(int(x+WIDTH-1)/8, Level::WIDTH-1);
     int sy = std::max(int(y)/8, 0);
@@ -122,8 +124,8 @@ void Player::Simul(double dt, bool left, bool right)
 
     for (int iy = sy; iy <= ey; ++iy)
     {
-        if (Coll(sx, iy)) x = sx*8+8;
-        if (Coll(ex, iy)) x = ex*8-WIDTH;
+        if (Coll(sx, iy, extra_mov)) x = sx*8+8;
+        if (Coll(ex, iy, extra_mov)) x = ex*8-WIDTH;
     }
 
     for (auto& et: level.Entities())

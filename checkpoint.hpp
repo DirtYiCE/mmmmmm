@@ -23,6 +23,7 @@ private:
     std::shared_ptr<SDL_Texture> text;
     int* handle;
     static int* active_cp;
+    bool flip;
 };
 
 #endif

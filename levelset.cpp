@@ -64,6 +64,7 @@ bool N(char c, const std::string& n)
 void Level::Render() const
 {
     auto& ts = Tileset();
+    auto ticks = SDL_GetTicks() / 50;
     for (unsigned x = 0; x < WIDTH; ++x)
         for (unsigned y = 0; y < HEIGHT; ++y)
             if (tiles[x][y])
@@ -82,6 +83,8 @@ void Level::Render() const
                     if (                y == HEIGHT-1 || N(tiles[x]  [y+1], n)) k |= 64;
                     if (x == WIDTH-1 || y == HEIGHT-1 || N(tiles[x+1][y+1], n)) k |= 128;
                 }
+                else
+                    k = ticks % el.anim_length;
 
                 SDL_Rect s = { int(el.coords[k].x*8), int(el.coords[k].y*8), 8, 8 };
                 SDL_Rect d = { int(x*8*SCREEN_MUL), int(y*8*SCREEN_MUL),
@@ -90,7 +93,12 @@ void Level::Render() const
                     SDL_SetTextureColorMod(ts.Texture(), color.r, color.g, color.b);
                 else
                     SDL_SetTextureColorMod(ts.Texture(), 255, 255, 255);
-                SDL_RenderCopy(renderer, ts.Texture(), &s, &d);
+
+                int flip = SDL_FLIP_NONE;
+                if (el.flags & Tileset::H_FLIP) flip |= SDL_FLIP_HORIZONTAL;
+                if (el.flags & Tileset::V_FLIP) flip |= SDL_FLIP_VERTICAL;
+                SDL_RenderCopyEx(renderer, ts.Texture(), &s, &d, 0, nullptr,
+                                 SDL_RendererFlip(flip));
             }
 
     for (auto& ptr : ents)

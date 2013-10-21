@@ -19,12 +19,17 @@ public:
         KILL          = 1 << 1,
         SOLID         = 1 << 2,
         COLORED       = 1 << 3,
+        H_FLIP        = 1 << 4,
+        V_FLIP        = 1 << 5,
+        LEFT_MOVING   = 1 << 6,
+        RIGHT_MOVING  = 1 << 7,
     };
     struct Element
     {
         Flags flags;
         std::array<Point, 256> coords;
         std::string neighbor;
+        int anim_length;
     };
 
     const Element& GetElement(char c) const

@@ -112,6 +112,19 @@ void Tileset::LoadElements(const std::string& file)
             std::cout << std::endl;
 #endif
         }
+        else
+        {
+            if (ary.size() % 2 != 0)
+                throw std::runtime_error(boost_format(
+                    "Tileset line '%1%': invalid length", c));
+            size_t i = 4;
+            for (; i < ary.size(); i += 2)
+            {
+                el.coords[i/2-1].x = boost::lexical_cast<int>(ary[i]);
+                el.coords[i/2-1].y = boost::lexical_cast<int>(ary[i+1]);
+            }
+            el.anim_length = i/2-1;
+        }
 
         elements[c] = el;
     }

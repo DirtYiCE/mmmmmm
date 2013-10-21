@@ -98,7 +98,7 @@ int main(int argc, char** argv)
             {
                 double dt = std::min(.01, xd);
                 p.CheckReset(dt);
-                level.Simul(dt);
+                if (!p.Killed()) level.Simul(dt);
                 p.Simul(dt,
                         keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT],
                         keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]);

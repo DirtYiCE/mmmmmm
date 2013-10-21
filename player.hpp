@@ -32,8 +32,9 @@ public:
     void Standing(bool s) { standing = s; }
 
     void Kill() { killed = 1; }
+    bool Killed() { return killed; }
 private:
-    bool Coll(int x, int y);
+    bool Coll(int x, int y, double& extra_mov);
 
     std::shared_ptr<SDL_Texture> texture;
     double x = 0, y = 0;
