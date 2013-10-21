@@ -22,8 +22,9 @@ struct Star
 {
     double x, y;
     double v;
+    double i;
 };
-std::array<Star, 20> stars;
+std::array<Star, 80> stars;
 
 int main(int argc, char** argv)
 {
@@ -55,6 +56,7 @@ int main(int argc, char** argv)
             s.x = rand() % 320;
             s.y = rand() % 200;
             s.v = 150 * (1 + double(rand()) / RAND_MAX);
+            s.i = 200 * (1 + double(rand()) / RAND_MAX);
         }
 
         Levelset ls(argv[1]);
@@ -105,11 +107,17 @@ int main(int argc, char** argv)
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
 
-            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
             for (Star& s: stars)
             {
                 s.x -= s.v * dts;
-                if (s.x < 0) s.x = 320;
+                if (s.x < 0)
+                {
+                    s.x = 320;
+                    s.y = rand() % 200;
+                    s.v = 150 * (1 + double(rand()) / RAND_MAX);
+                    s.i = 200 * (1 + double(rand()) / RAND_MAX);
+                }
+                SDL_SetRenderDrawColor(renderer, s.i, s.i, s.i, 255);
                 SDL_Rect r = { int(s.x)*SCREEN_MUL, int(s.y)*SCREEN_MUL,
                                SCREEN_MUL, SCREEN_MUL };
                 SDL_RenderFillRect(renderer, &r);
