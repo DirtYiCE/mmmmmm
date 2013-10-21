@@ -54,6 +54,13 @@ void Level::Simul(double dt)
         ptr->Simul(dt);
 }
 
+bool N(char c, const std::string& n)
+{
+    for (char x: n)
+        if (x == c) return true;
+    return false;
+}
+
 void Level::Render() const
 {
     auto& ts = Tileset();
@@ -65,15 +72,15 @@ void Level::Render() const
                 int k = 0;
                 if (el.flags & Tileset::HAS_DIRECTION)
                 {
-                    char n = el.neighbor;
-                    if (x == WIDTH-1 ||                  tiles[x+1][y]   == n) k |= 1;
-                    if (x == WIDTH-1 || y == 0        || tiles[x+1][y-1] == n) k |= 2;
-                    if (                y == 0        || tiles[x]  [y-1] == n) k |= 4;
-                    if (x == 0       || y == 0        || tiles[x-1][y-1] == n) k |= 8;
-                    if (x == 0       ||                  tiles[x-1][y]   == n) k |= 16;
-                    if (x == 0       || y == HEIGHT-1 || tiles[x-1][y+1] == n) k |= 32;
-                    if (                y == HEIGHT-1 || tiles[x]  [y+1] == n) k |= 64;
-                    if (x == WIDTH-1 || y == HEIGHT-1 || tiles[x+1][y+1] == n) k |= 128;
+                    auto& n = el.neighbor;
+                    if (x == WIDTH-1 ||                  N(tiles[x+1][y],   n)) k |= 1;
+                    if (x == WIDTH-1 || y == 0        || N(tiles[x+1][y-1], n)) k |= 2;
+                    if (                y == 0        || N(tiles[x]  [y-1], n)) k |= 4;
+                    if (x == 0       || y == 0        || N(tiles[x-1][y-1], n)) k |= 8;
+                    if (x == 0       ||                  N(tiles[x-1][y],   n)) k |= 16;
+                    if (x == 0       || y == HEIGHT-1 || N(tiles[x-1][y+1], n)) k |= 32;
+                    if (                y == HEIGHT-1 || N(tiles[x]  [y+1], n)) k |= 64;
+                    if (x == WIDTH-1 || y == HEIGHT-1 || N(tiles[x+1][y+1], n)) k |= 128;
                 }
 
                 SDL_Rect s = { int(el.coords[k].x*8), int(el.coords[k].y*8), 8, 8 };

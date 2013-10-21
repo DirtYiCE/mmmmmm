@@ -24,7 +24,7 @@ public:
     {
         Flags flags;
         std::array<Point, 256> coords;
-        char neighbor;
+        std::string neighbor;
     };
 
     const Element& GetElement(char c) const

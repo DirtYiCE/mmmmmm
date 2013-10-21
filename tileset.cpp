@@ -78,7 +78,7 @@ void Tileset::LoadElements(const std::string& file)
             if (ary.size() < 5 || (ary.size() % 3) != 2)
                 throw std::runtime_error(boost_format(
                     "Tileset line '%1%': invalid length", c));
-            el.neighbor = ary[4][0];
+            el.neighbor = ary[4];
 
             for (size_t i = 1; i < 256; ++i)
                 el.coords[i] = el.coords[0];
