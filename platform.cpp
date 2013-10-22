@@ -6,7 +6,7 @@
 
 Platform::Platform(const std::vector<std::string>& args)
 {
-    if (args.size() != 7)
+    if (args.size() != 8)
         throw std::runtime_error("Invalid platform definition");
 
     horiz = args[0] == "hplatform";
@@ -16,12 +16,13 @@ Platform::Platform(const std::vector<std::string>& args)
     height = boost::lexical_cast<int>(args[4]);
     min = boost::lexical_cast<int>(args[5]);
     max = boost::lexical_cast<int>(args[6]);
+    speed = boost::lexical_cast<double>(args[7]);
 }
 
 void Platform::Simul(double dt)
 {
     double& c = horiz ? x : y;
-    mov = (posdir ? dt : -dt) * 40;
+    mov = (posdir ? dt : -dt) * speed;
     c += mov;
 
     if (c <= min) { posdir = true; c = min; mov = 0; }

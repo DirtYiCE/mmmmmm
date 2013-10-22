@@ -50,7 +50,6 @@ bool Player::Coll(int x, int y, double& extra_mov)
         auto fl = level.Tileset().GetElement(c).flags;
         if (fl & Tileset::LEFT_MOVING) extra_mov = std::max(extra_mov-1, -1.0);
         if (fl & Tileset::RIGHT_MOVING) extra_mov = std::min(extra_mov+1, 1.0);
-        if (fl & Tileset::KILL) Kill();
         if (fl & Tileset::SOLID) return true;
     }
     return false;
@@ -127,6 +126,16 @@ void Player::Simul(double dt, bool left, bool right)
         if (Coll(sx, iy, extra_mov)) x = sx*8+8;
         if (Coll(ex, iy, extra_mov)) x = ex*8-WIDTH;
     }
+
+    sx = std::max(int(x)/8, 0);
+    ex = std::min(int(x+WIDTH-1)/8, Level::WIDTH-1);
+    for (int ix = sx; ix <= ex; ++ix)
+        for (int iy = sy; iy <= ey; ++iy)
+        {
+            char c = level.Tile(ix, iy);
+            if (c && level.Tileset().GetElement(c).flags & Tileset::KILL)
+                Kill();
+        }
 
     for (auto& et: level.Entities())
         if (!(x + WIDTH < et->X() ||

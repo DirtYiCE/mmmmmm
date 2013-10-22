@@ -16,7 +16,7 @@ public:
 private:
     bool horiz, posdir = true;
     int min, max;
-    double mov;
+    double mov, speed;
 };
 
 #endif

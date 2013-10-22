@@ -1,5 +1,6 @@
 #include <boost/lexical_cast.hpp>
 #include "enemy.hpp"
+#include "levelset.hpp"
 #include "player.hpp"
 #include "utils.hpp"
 #include "globals.hpp"
@@ -31,6 +32,8 @@ void Enemy::Render()
 {
     SDL_Rect r = { int(x)*SCREEN_MUL, int(y)*SCREEN_MUL,
                    width*SCREEN_MUL, height*SCREEN_MUL };
+    Color c = level.Color();
+    SDL_SetTextureColorMod(text.get(), c.r, c.g, c.b);
     SDL_RenderCopy(renderer, text.get(), nullptr, &r);
 }
 
