@@ -9,7 +9,7 @@
     throw std::runtime_error(boost_format(      \
         "SDL error while %1%, error: %2%", x, SDL_GetError()))
 
-extern const int SCREEN_MUL = 3; // 1: 320x200, 2: 640x400, 3: 960x600, 4: 1280x800
+extern const int SCREEN_MUL = 2; // 1: 320x200, 2: 640x400, 3: 960x600, 4: 1280x800
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -25,6 +25,23 @@ struct Star
     double i;
 };
 std::array<Star, 80> stars;
+
+static void AudioCb(void *, Uint8 *stream, int len)
+{
+    static int start = 0;
+    for (int i = 0; i < len; ++i)
+    {
+        int t = i+start;
+        //stream[i] = ((7&(((t>>17)+1)>>2)+((t>>10)&1+2*(t>>18&1))*(("23468643"[7&t>>12]-48)+(3&t>>11))+((3&t>>17)>0)*(3&t>>9)*!(1&t>>10)*(((2+t>>10&3)^(2+t>>11&3))))*t*"@06+"[3&t>>15]/32);
+        //stream[i] = t>>6^t>>8|t>>12|t&63;
+        //stream[i] = t*(t>>9|t>>13);
+        //stream[i] = t*(42&t>>10);
+
+        //stream[i] = (t*3*(42&t>>10))^(t*7&t*7>>8)^(t>>12)^(t&63);
+        stream[i] = (t>>7&t>>4)^((t>>12)&(t*(42&t>>10)));
+    }
+    start += len;
+}
 
 int main(int argc, char** argv)
 {
@@ -42,6 +59,16 @@ int main(int argc, char** argv)
             "mmmmmm", 0,0, 320*SCREEN_MUL, 200*SCREEN_MUL, SDL_WINDOW_SHOWN));
         if (!win) SDL_ERROR("creating window");
         window = win.get();
+
+        SDL_AudioSpec spec;
+        spec.freq = 8000;
+        //spec.format = AUDIO_S16LSB;
+        spec.format = AUDIO_U8;
+        spec.channels = 1;
+        spec.samples = 4096;
+        spec.callback = AudioCb;
+        SDL_OpenAudio(&spec, nullptr);
+        SDL_PauseAudio(0);
 
         RendererPtr ren(SDL_CreateRenderer(
             window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
